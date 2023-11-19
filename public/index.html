@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Racing Game — Networked-Aframe</title>
+    <meta name="description" content="Racing Game — Networked-Aframe" />
+
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.slim.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="https://unpkg.com/networked-aframe@^0.11.0/dist/networked-aframe.min.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/gh/kripken/ammo.js@8f8b7187ef74994093318645e5e96b11d982688a/builds/ammo.wasm.js"></script> injected with vehicle-controls-->
+
+    <script>
+      // see issue https://github.com/networked-aframe/networked-aframe/issues/267
+      NAF.schemas.getComponentsOriginal = NAF.schemas.getComponents;
+      NAF.schemas.getComponents = (template) => {
+        if (!NAF.schemas.hasTemplate("#avatar-template")) {
+          NAF.schemas.add({
+            template: "#avatar-template",
+            components: [
+              "position",
+              "rotation",
+              {
+                selector: ".head",
+                component: "material",
+                property: "color",
+              },
+            ],
+          });
+        }
+        const components = NAF.schemas.getComponentsOriginal(template);
+        return components;
+      };
+    </script>
+    <script src="https://unpkg.com/aframe-environment-component@1.3.2/dist/aframe-environment-component.min.js"></script>
+    <script src="/js/vehicle-controls.js"></script>
+  </head>
+  <body>
+    <a-scene
+      networked-scene="
+      room: basic;
+      debug: true;
+      adapter: wseasyrtc;
+    "
+      gltf-model="dracoDecoderPath:https://www.gstatic.com/draco/versioned/decoders/1.5.6/;basisTranscoderPath:https://cdn.jsdelivr.net/npm/three@0.154.0/examples/jsm/libs/basis/"
+      renderer="physicallyCorrectLights:true;colorManagement:true"
+      shadow="type: pcfsoft"
+      reflection
+    >
+      <a-assets>
+        <!-- Templates -->
+        <a-asset-item
+          id="trackModel"
+          src="https://cdn.jsdelivr.net/gh/pmndrs/racing-game@7816a5d954b75e6ad853ae4e4f0cbbd628072643/public/models/track-draco.glb"
+        ></a-asset-item>
+        <!--<a-asset-item
+          id="wheelModel"
+          src="https://cdn.jsdelivr.net/gh/pmndrs/racing-game@7816a5d954b75e6ad853ae4e4f0cbbd628072643/public/models/wheel-draco.glb"
+        ></a-asset-item>
+currently hard coded in vehicle-controls -->
+        <a-asset-item
+          id="chassisModel"
+          src="https://cdn.jsdelivr.net/gh/pmndrs/racing-game@7816a5d954b75e6ad853ae4e4f0cbbd628072643/public/models/chassis-draco.glb"
+        ></a-asset-item>
+
+        <!-- Avatar -->
+        <template id="avatar-template">
+          <a-entity class="avatar">
+            <a-sphere class="head" scale="0.45 0.5 0.4"></a-sphere>
+            <a-entity class="face" position="0 0.05 0">
+              <a-sphere
+                class="eye"
+                color="#efefef"
+                position="0.16 0.1 -0.35"
+                scale="0.12 0.12 0.12"
+              >
+                <a-sphere
+                  class="pupil"
+                  color="#000"
+                  position="0 0 -1"
+                  scale="0.2 0.2 0.2"
+                ></a-sphere>
+              </a-sphere>
+              <a-sphere
+                class="eye"
+                color="#efefef"
+                position="-0.16 0.1 -0.35"
+                scale="0.12 0.12 0.12"
+              >
+                <a-sphere
+                  class="pupil"
+                  color="#000"
+                  position="0 0 -1"
+                  scale="0.2 0.2 0.2"
+                ></a-sphere>
+              </a-sphere>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <!-- /Templates -->
+      </a-assets>
+
+      <a-entity id="cameraRig" position="1.03 0 -42.24" rotation="0 -67.52 0">
+        <a-entity
+          id="player"
+          networked="template:#avatar-template;attachTemplateToLocal:false;"
+          camera
+          position="0 1.6 0"
+          look-controls
+        >
+          <a-sphere class="head" visible="false"></a-sphere>
+        </a-entity>
+      </a-entity>
+
+      <a-entity
+        environment="preset:arches;dressing:none;ground:none;shadow:true;shadowSize:120;fog:0"
+      ></a-entity>
+      <a-entity light="type:ambient;intensity:0.5"></a-entity>
+
+      <a-entity gltf-model="#trackModel"></a-entity>
+
+      <a-entity
+        shadow
+        position="15.45 0.57 -48"
+        rotation="0 115 0"
+        gltf-model="#chassisModel"
+        vehicle-controls
+      ></a-entity>
+    </a-scene>
+
+    <script>
+      // Called by Networked-Aframe when connected to server
+      function onConnect() {
+        console.log("onConnect", new Date());
+      }
+    </script>
+  </body>
+</html>
