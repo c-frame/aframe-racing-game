@@ -15,7 +15,11 @@ function injectJS(url) {
 }
 
 AFRAME.registerComponent("vehicle-controls", {
-  schema: {},
+  schema: {
+    enabled: { type: "boolean", default: true },
+    addWheels: { type: "boolean", default: true },
+    floorPosition: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
+  },
   init() {
     // Keyboard actions
     this.actions = {};
@@ -93,6 +97,7 @@ AFRAME.registerComponent("vehicle-controls", {
       "style",
       "color: #ffffff; background-color: #990000; position: absolute; bottom: 0px; right: 0px; padding: 5px;"
     );
+    this.speedometer.style.display = this.data.enabled ? "block" : "none";
     document.body.appendChild(this.speedometer);
 
     this.materialDynamic = new THREE.MeshPhongMaterial({ color: 0xfca400 }); // wall of cubes
@@ -130,6 +135,9 @@ AFRAME.registerComponent("vehicle-controls", {
     if (!this.vehiculePhysicsInitialized) {
       this.initVehiculePhysics();
     }
+    if (this.speedometer) {
+      this.speedometer.style.display = this.data.enabled ? "block" : "none";
+    }
   },
 
   tick(t, delta) {
@@ -142,6 +150,7 @@ AFRAME.registerComponent("vehicle-controls", {
   },
 
   keyup(e) {
+    if (!this.data.enabled) return;
     if (this.keysActions[e.code]) {
       this.actions[this.keysActions[e.code]] = false;
       e.preventDefault();
@@ -151,6 +160,7 @@ AFRAME.registerComponent("vehicle-controls", {
   },
 
   keydown(e) {
+    if (!this.data.enabled) return;
     if (this.keysActions[e.code]) {
       this.actions[this.keysActions[e.code]] = true;
       e.preventDefault();
@@ -230,6 +240,8 @@ AFRAME.registerComponent("vehicle-controls", {
     // );
     const mesh = this.wheelModel.clone(true);
     this.el.sceneEl.object3D.add(mesh);
+    // TODO we should really not add them instead of setting visible false
+    if (!this.data.addWheels) mesh.visible = false;
     return mesh;
   },
 
@@ -467,15 +479,8 @@ AFRAME.registerComponent("vehicle-controls", {
   createObjects() {
     // floor
     // this.createBox(new THREE.Vector3(0, -0.5, 0), this.ZERO_QUATERNION, 75, 1, 75, 0, 2);
-    const floor = this.createBox(
-      new THREE.Vector3(0, -0.4, 0),
-      this.ZERO_QUATERNION,
-      500,
-      1,
-      500,
-      0,
-      2
-    );
+    const pos = this.data.floorPosition;
+    const floor = this.createBox(new THREE.Vector3(pos.x, pos.y - 1, pos.z), this.ZERO_QUATERNION, 500, 1, 500, 0, 2);
     floor.visible = false;
 
     // ramp
