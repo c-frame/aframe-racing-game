@@ -46,19 +46,22 @@ AFRAME.registerComponent("vehicle-controls", {
     //})();
     // when used on glitch
     (async () => {
-      await injectJS("https://cdn.jsdelivr.net/gh/kripken/ammo.js@8f8b7187ef74994093318645e5e96b11d982688a/builds/ammo.wasm.js");
+      await injectJS(
+        "https://cdn.jsdelivr.net/gh/kripken/ammo.js@8f8b7187ef74994093318645e5e96b11d982688a/builds/ammo.wasm.js"
+      );
       Ammo().then((Ammo) => {
         this.ammoLoaded = true;
         this.update();
       });
     })();
-    
+
     const dracoLoader = this.el.sceneEl.systems["gltf-model"].getDRACOLoader();
     this.loader = new THREE.GLTFLoader();
     if (dracoLoader) {
       this.loader.setDRACOLoader(dracoLoader);
     }
-    const wheelUrl = "https://cdn.jsdelivr.net/gh/pmndrs/racing-game@7816a5d954b75e6ad853ae4e4f0cbbd628072643/public/models/wheel-draco.glb";
+    const wheelUrl =
+      "https://cdn.jsdelivr.net/gh/pmndrs/racing-game@7816a5d954b75e6ad853ae4e4f0cbbd628072643/public/models/wheel-draco.glb";
     this.loader.load(
       wheelUrl,
       (gltfModel) => {
@@ -114,9 +117,7 @@ AFRAME.registerComponent("vehicle-controls", {
   initPhysics() {
     // Physics configuration
     this.collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
-    this.dispatcher = new Ammo.btCollisionDispatcher(
-      this.collisionConfiguration
-    );
+    this.dispatcher = new Ammo.btCollisionDispatcher(this.collisionConfiguration);
     this.broadphase = new Ammo.btDbvtBroadphase();
     this.solver = new Ammo.btSequentialImpulseConstraintSolver();
     this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(
@@ -172,9 +173,7 @@ AFRAME.registerComponent("vehicle-controls", {
   createBox(pos, quat, w, l, h, mass, friction) {
     const material = mass > 0 ? this.materialDynamic : this.materialStatic;
     const shape = new THREE.BoxGeometry(w, l, h, 1, 1, 1);
-    const geometry = new Ammo.btBoxShape(
-      new Ammo.btVector3(w * 0.5, l * 0.5, h * 0.5)
-    );
+    const geometry = new Ammo.btBoxShape(new Ammo.btVector3(w * 0.5, l * 0.5, h * 0.5));
 
     if (!mass) mass = 0;
     if (!friction) friction = 1;
@@ -187,20 +186,13 @@ AFRAME.registerComponent("vehicle-controls", {
     const transform = new Ammo.btTransform();
     transform.setIdentity();
     transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
-    transform.setRotation(
-      new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w)
-    );
+    transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
     const motionState = new Ammo.btDefaultMotionState(transform);
 
     const localInertia = new Ammo.btVector3(0, 0, 0);
     geometry.calculateLocalInertia(mass, localInertia);
 
-    const rbInfo = new Ammo.btRigidBodyConstructionInfo(
-      mass,
-      motionState,
-      geometry,
-      localInertia
-    );
+    const rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, geometry, localInertia);
     const body = new Ammo.btRigidBody(rbInfo);
 
     body.setFriction(friction);
@@ -286,36 +278,21 @@ AFRAME.registerComponent("vehicle-controls", {
 
     // Chassis
     const geometry = new Ammo.btBoxShape(
-      new Ammo.btVector3(
-        chassisWidth * 0.5,
-        chassisHeight * 0.5,
-        chassisLength * 0.5
-      )
+      new Ammo.btVector3(chassisWidth * 0.5, chassisHeight * 0.5, chassisLength * 0.5)
     );
     const transform = new Ammo.btTransform();
     transform.setIdentity();
     transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
-    transform.setRotation(
-      new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w)
-    );
+    transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
     const motionState = new Ammo.btDefaultMotionState(transform);
     const localInertia = new Ammo.btVector3(0, 0, 0);
     geometry.calculateLocalInertia(massVehicle, localInertia);
     const body = new Ammo.btRigidBody(
-      new Ammo.btRigidBodyConstructionInfo(
-        massVehicle,
-        motionState,
-        geometry,
-        localInertia
-      )
+      new Ammo.btRigidBodyConstructionInfo(massVehicle, motionState, geometry, localInertia)
     );
     body.setActivationState(this.DISABLE_DEACTIVATION);
     this.physicsWorld.addRigidBody(body);
-    const chassisMesh = this.createChassisMesh(
-      chassisWidth,
-      chassisHeight,
-      chassisLength
-    );
+    const chassisMesh = this.createChassisMesh(chassisWidth, chassisHeight, chassisLength);
 
     // Raycast Vehicle
     let engineForce = 0;
@@ -363,44 +340,28 @@ AFRAME.registerComponent("vehicle-controls", {
 
     addWheel(
       true,
-      new Ammo.btVector3(
-        wheelHalfTrackFront,
-        wheelAxisHeightFront,
-        wheelAxisPositionFront
-      ),
+      new Ammo.btVector3(wheelHalfTrackFront, wheelAxisHeightFront, wheelAxisPositionFront),
       wheelRadiusFront,
       wheelWidthFront,
       FRONT_LEFT
     );
     addWheel(
       true,
-      new Ammo.btVector3(
-        -wheelHalfTrackFront,
-        wheelAxisHeightFront,
-        wheelAxisPositionFront
-      ),
+      new Ammo.btVector3(-wheelHalfTrackFront, wheelAxisHeightFront, wheelAxisPositionFront),
       wheelRadiusFront,
       wheelWidthFront,
       FRONT_RIGHT
     );
     addWheel(
       false,
-      new Ammo.btVector3(
-        wheelHalfTrackBack,
-        wheelAxisHeightBack,
-        wheelAxisPositionBack
-      ),
+      new Ammo.btVector3(wheelHalfTrackBack, wheelAxisHeightBack, wheelAxisPositionBack),
       wheelRadiusBack,
       wheelWidthBack,
       BACK_LEFT
     );
     addWheel(
       false,
-      new Ammo.btVector3(
-        -wheelHalfTrackBack,
-        wheelAxisHeightBack,
-        wheelAxisPositionBack
-      ),
+      new Ammo.btVector3(-wheelHalfTrackBack, wheelAxisHeightBack, wheelAxisPositionBack),
       wheelRadiusBack,
       wheelWidthBack,
       BACK_RIGHT
@@ -410,34 +371,41 @@ AFRAME.registerComponent("vehicle-controls", {
     const sync = (dt) => {
       const speed = vehicle.getCurrentSpeedKmHour();
 
-      this.speedometer.innerText =
-        (speed < 0 ? "(R) " : "") + Math.abs(speed).toFixed(1) + " km/h";
+      this.speedometer.innerText = (speed < 0 ? "(R) " : "") + Math.abs(speed).toFixed(1) + " km/h";
 
       breakingForce = 0;
       engineForce = 0;
 
       if (this.actions.acceleration) {
-        if (speed < -1) breakingForce = maxBreakingForce;
-        else engineForce = maxEngineForce;
+        if (speed < -1) {
+          breakingForce = maxBreakingForce;
+        } else {
+          engineForce = maxEngineForce;
+        }
       }
       if (this.actions.braking) {
-        if (speed > 1) breakingForce = maxBreakingForce;
-        else engineForce = -maxEngineForce / 2;
+        if (speed > 1) {
+          breakingForce = maxBreakingForce;
+        } else {
+          engineForce = -maxEngineForce / 2;
+        }
       }
       if (this.actions.left) {
-        if (vehicleSteering < steeringClamp)
+        if (vehicleSteering < steeringClamp) {
           vehicleSteering += steeringIncrement;
+        }
       } else {
         if (this.actions.right) {
-          if (vehicleSteering > -steeringClamp)
+          if (vehicleSteering > -steeringClamp) {
             vehicleSteering -= steeringIncrement;
+          }
         } else {
-          if (vehicleSteering < -steeringIncrement)
+          if (vehicleSteering < -steeringIncrement) {
             vehicleSteering += steeringIncrement;
-          else {
-            if (vehicleSteering > steeringIncrement)
+          } else {
+            if (vehicleSteering > steeringIncrement) {
               vehicleSteering -= steeringIncrement;
-            else {
+            } else {
               vehicleSteering = 0;
             }
           }
