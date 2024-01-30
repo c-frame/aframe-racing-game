@@ -5,9 +5,11 @@
     <title>Racing Game — Networked-Aframe</title>
     <meta name="description" content="Racing Game — Networked-Aframe" />
 
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.slim.js"></script>
     <script src="/easyrtc/easyrtc.js"></script>
+    <script src="https://unpkg.com/3dstreet@0.4.5/dist/aframe-street-component.js"></script>
+
     <script src="https://unpkg.com/networked-aframe@^0.11.0/dist/networked-aframe.min.js"></script>
     <!--<script src="https://cdn.jsdelivr.net/gh/kripken/ammo.js@8f8b7187ef74994093318645e5e96b11d982688a/builds/ammo.wasm.js"></script> injected with vehicle-controls-->
 
@@ -102,7 +104,7 @@ currently hard coded in vehicle-controls -->
         <!-- /Templates -->
       </a-assets>
 
-      <a-entity id="cameraRig" position="1.03 0 -42.24" rotation="0 -67.52 0">
+      <a-entity id="cameraRig" position="3 0 0" rotation="0 0 0">
         <a-entity
           id="player"
           networked="template:#avatar-template;attachTemplateToLocal:false;"
@@ -119,15 +121,18 @@ currently hard coded in vehicle-controls -->
       ></a-entity>
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
 
-      <a-entity gltf-model="#trackModel"></a-entity>
+      <!-- <a-entity gltf-model="#trackModel"></a-entity> -->
+      <a-entity id="mySimpleStreet" street streetmix-loader="streetmixStreetURL: https://streetmix.net/kfarr/3/" ></a-entity>
 
       <a-entity
         shadow
-        position="15.45 0.57 -48"
+        position="0 0 -8"
         rotation="0 115 0"
-        gltf-model="#chassisModel"
-        vehicle-controls="floorPosition:0 0.6 0"
-      ></a-entity>
+
+        vehicle-controls="floorPosition: 0 0.6 0; addWheels: true;"
+      >
+      <a-entity position="0 -0.7 0" mixin="box-truck-rig"></a-entity>
+    </a-entity>
     </a-scene>
 
     <script>
