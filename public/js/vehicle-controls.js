@@ -248,8 +248,8 @@ AFRAME.registerComponent("vehicle-controls", {
   createVehicle(pos, quat) {
     // Vehicle constants
     const chassisWidth = 1.8;
-    const chassisHeight = 0.6;
-    const chassisLength = 4;
+    const chassisHeight = 1.6;
+    const chassisLength = 6;
     const massVehicle = 800;
 
     const wheelAxisPositionBack = -1.4;
