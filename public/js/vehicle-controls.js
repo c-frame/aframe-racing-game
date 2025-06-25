@@ -248,20 +248,20 @@ AFRAME.registerComponent("vehicle-controls", {
   createVehicle(pos, quat) {
     // Vehicle constants
     const chassisWidth = 1.8;
-    const chassisHeight = 0.6;
-    const chassisLength = 4;
+    const chassisHeight = 1.6;
+    const chassisLength = 6;
     const massVehicle = 800;
 
-    const wheelAxisPositionBack = -1.1;
+    const wheelAxisPositionBack = -1.4;
     const wheelHalfTrackBack = 0.9;
     const wheelAxisHeightBack = 0.3;
-    const wheelRadiusBack = 0.34;
+    const wheelRadiusBack = 0.6;
     const wheelWidthBack = 0.2;
 
-    const wheelAxisPositionFront = 1.55;
+    const wheelAxisPositionFront = 2.45;
     const wheelHalfTrackFront = 0.9;
     const wheelAxisHeightFront = 0.3;
-    const wheelRadiusFront = 0.34;
+    const wheelRadiusFront = 0.6;
     const wheelWidthFront = 0.2;
 
     const friction = 1000;
@@ -272,7 +272,7 @@ AFRAME.registerComponent("vehicle-controls", {
     const rollInfluence = 0.2;
 
     const steeringIncrement = 0.04;
-    const steeringClamp = 0.5;
+    const steeringClamp = 0.7;
     const maxEngineForce = 2000;
     const maxBreakingForce = 100;
 
